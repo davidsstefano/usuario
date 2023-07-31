@@ -66,7 +66,4 @@ controllerUsuarios.post("/usuarios/cadastro", async function (request, response)
   }
 });
 
-
-
-
 export default controllerUsuarios;
