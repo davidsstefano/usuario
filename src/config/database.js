@@ -1,10 +1,10 @@
 import mysql from "mysql";
 
 const db = mysql.createPool({
-  host: "hiddenwolf.mysql.dbaas.com.br",
-  user: "hiddenwolf",
-  password: "DW#X1SN89nYxrD",
-  database: "hiddenwolf",
+  host: ,
+  user: ,
+  password: ,
+  database:,
 });
 
 export default db;
