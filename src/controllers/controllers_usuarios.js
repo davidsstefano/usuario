@@ -50,12 +50,7 @@ controllerUsuarios.post("/usuarios/login", function (request, response) {
   );
 }); 
 
-
-
-
-
-
-
+ 
 
 const saltRounds = 10;
 
@@ -64,9 +59,10 @@ controllerUsuarios.post("/usuarios/cadastro", async function (request, response)
     const currentDate = new Date();
     const salt = await bcrypt.genSalt(saltRounds);
     const token_user = (salt + currentDate).replace(/\//g, '');
+    const hashedPassword = await bcrypt.hash(request.body.senha_user, salt);
 
     const sql = "INSERT INTO usuarios (nome_user, email_user, senha_user, token_user, data_cadastro_user) VALUES (?, ?, ?, ?, ?)";
-    db.query(sql, [request.body.nome_user, request.body.email_user, request.body.senha_user, token_user, currentDate], function (err, result) {
+    db.query(sql, [request.body.nome_user, request.body.email_user, hashedPassword, token_user, currentDate], function (err, result) {
       if (err) {
         return response.status(500).send(err);
       } else {
