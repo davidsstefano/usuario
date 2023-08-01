@@ -2,6 +2,7 @@ import { Router } from "express";
 import db from "../config/database.js";
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
+const saltRounds = 10;
 
 
 
@@ -35,11 +36,14 @@ controllerUsuarios.get("/usuarios/:user_id", function (request, response) {
 });
 
 
-controllerUsuarios.post("/usuarios/login", function (request, response) {
-  let sql = "SELECT id_user, nome_user  FROM usuarios WHERE email_user = ? and senha_user = ?";
+controllerUsuarios.post("/usuarios/login", async function (request, response) {
+  const salt = await bcrypt.genSalt(saltRounds);
+  const hashedPassword = await bcrypt.hash(request.body.senha_user, salt);
+
+  const sql = "SELECT id_user, nome_user  FROM usuarios WHERE email_user = ? and senha_user = ?";
   db.query(
     sql,
-    [request.body.email_user, request.body.senha_user],
+    [request.body.email_user, hashedPassword],
     function (err, result) {
       if (err) {
         return response.status(500).send(err);
@@ -52,7 +56,7 @@ controllerUsuarios.post("/usuarios/login", function (request, response) {
 
  
 
-const saltRounds = 10;
+
 
 controllerUsuarios.post("/usuarios/cadastro", async function (request, response) {
   try {
