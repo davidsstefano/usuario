@@ -1,13 +1,10 @@
 import { Router } from "express";
 import db from "../config/database.js";
-import bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
-const saltRounds = 10;
-
-
+import bcrypt from "bcrypt";
+import CryptoJS from 'crypto-js';
+import {v4 as uuidv4} from "uuid"
 
 const controllerUsuarios = Router();
-
 
 controllerUsuarios.get("/usuarios", function (request, response) {
   let sql = "SELECT * FROM usuarios";
@@ -36,47 +33,71 @@ controllerUsuarios.get("/usuarios/:user_id", function (request, response) {
 });
 
 
+
 controllerUsuarios.post("/usuarios/login", async function (request, response) {
-  const salt = await bcrypt.genSalt(saltRounds);
-  const hashedPassword = await bcrypt.hash(request.body.senha_user, salt);
+  try {
+    const md5Hash = CryptoJS.MD5(request.body.senha_user).toString();
+  
+    console.log(md5Hash);
 
-  const sql = "SELECT id_user, nome_user  FROM usuarios WHERE email_user = ? and senha_user = ?";
-  db.query(
-    sql,
-    [request.body.email_user, hashedPassword],
-    function (err, result) {
-      if (err) {
-        return response.status(500).send(err);
-      } else {
-        return response.status(result.length > 0 ? 200 : 401).json(result[0]);
+    const sql = "SELECT id_user, nome_user FROM usuarios WHERE email_user = ? and senha_user = ?";
+    db.query(
+      sql,
+      [request.body.email_user, md5Hash],
+      
+      function (err, result) {
+        if (err) {
+          return response.status(500).send(err);
+        } else {
+          return response.status(result.length > 0 ? 200 : 401).json(result[0]);
+          
+        }
       }
-    }
-  );
-}); 
+      
+    );
+  } catch (err) {
+    console.error("Error during login:", err);
+    return response.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
- 
 
 
 
 controllerUsuarios.post("/usuarios/cadastro", async function (request, response) {
   try {
     const currentDate = new Date();
-    const salt = await bcrypt.genSalt(saltRounds);
-    const token_user = (salt + currentDate).replace(/\//g, '');
-    const hashedPassword = await bcrypt.hash(request.body.senha_user, salt);
+  
+    const token_user = uuidv4();
 
-    const sql = "INSERT INTO usuarios (nome_user, email_user, senha_user, token_user, data_cadastro_user) VALUES (?, ?, ?, ?, ?)";
-    db.query(sql, [request.body.nome_user, request.body.email_user, hashedPassword, token_user, currentDate], function (err, result) {
-      if (err) {
-        return response.status(500).send(err);
-      } else {
-        return response.status(201).json({ user_id: result.insertId });
+    const md5Hash = CryptoJS.MD5(request.body.senha_user).toString();
+
+    const sql =
+      "INSERT INTO usuarios (nome_user, email_user, senha_user, token_user, data_cadastro_user) VALUES (?, ?, ?, ?, ?)";
+    db.query(
+      sql,
+      [
+        request.body.nome_user,
+        request.body.email_user,
+        md5Hash,
+        token_user,
+        currentDate,
+      ],
+      function (err, result) {
+        if (err) {
+          return response.status(500).send(err);
+        } else {
+          return response.status(201).json({ user_id: result.insertId });
+        }
       }
-    });
+    );
   } catch (error) {
-    return response.status(500).send(error);
+    console.error("Error during user registration:", error);
+    return response.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+
 
 
 export default controllerUsuarios;
