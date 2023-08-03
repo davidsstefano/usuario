@@ -16,7 +16,7 @@ controllerFavoritos.get("/favoritos", function (request, response) {
 });
 
 controllerFavoritos.get("/favoritos/:user_id", function (request, response) {
-     let sql = "SELECT * FROM favoritos WHERE id_usuario = ?";
+     let sql = "SELECT * FROM favoritos_filmes WHERE id_usuario = ?";
      db.query(sql, [request.params.user_id], function (err, result) {
        if (err) {
          return response.status(500).send(err);
