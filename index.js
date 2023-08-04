@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import controllerUsuarios from "./src/controllers/controllers_usuarios.js";
-import controllerFavoritos from "./src/controllers/contrllers_favoritos.js";
+import controllerFavoritos from "./src/controllers/controllers_favoritos.js";
 
 const app = express();
 const port = 3001;
