@@ -111,7 +111,7 @@ controllerUsuarios.post(
       const currentDate = new Date();
       const token_user = uuidv4();
       const md5Hash = CryptoJS.MD5(request.body.senha_user).toString();
-      const acesso = 0;
+      const acesso = 1;
 
       const sql = `INSERT INTO usuarios (nome_user, email_user, senha_user, token_user, data_cadastro_user, quantidade_acesso)
        VALUES (?, ?, ?, ?, ?, ?)`;
