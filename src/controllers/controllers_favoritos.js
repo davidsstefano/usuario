@@ -121,5 +121,53 @@ controllerFavoritos.post(
   }
 );
 
+controllerFavoritos.delete('/filmes_favoritos/:id_favorito_filmes', async function (request, response) {
+  try {
+    const favoritoId = request.body.id_favorito_filmes;
+    const sqlDelete = "DELETE FROM favoritos_filmes WHERE id_favorito_filmes = ?";
+ 
+    db.query(sqlDelete, [favoritoId], function (err, result) {
+      if (err) {
+        return response.status(500).json({ error: 'Erro ao excluir favorito.' });
+      } else {
+        if (result.affectedRows > 0) {
+          // If at least one row was affected, it means the favorite was deleted successfully
+          response.status(200).json({ message: 'Favorito excluído com sucesso.' });
+        } else {
+          // If no rows were affected, the provided favoritoId might not exist in the database
+          response.status(404).json({ error: 'Favorito não encontrado.' });
+        }
+      }
+    });
+  } catch (err) {
+    console.error("Error during deleting favorite:", err);
+    return response.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+controllerFavoritos.delete('/generos_favoritos/:id_favorito_generos', async function (request, response) {
+  try {
+    const favoritoId = request.body.id_favorito_generos;
+    const sqlDelete = "DELETE FROM favoritos_generos WHERE id_favorito_generos = ?";
+ 
+    db.query(sqlDelete, [favoritoId], function (err, result) {
+      if (err) {
+        return response.status(500).json({ error: 'Erro ao excluir favorito.' });
+      } else {
+        if (result.affectedRows > 0) {
+          // If at least one row was affected, it means the favorite was deleted successfully
+          response.status(200).json({ message: 'Favorito excluído com sucesso.' });
+        } else {
+          // If no rows were affected, the provided favoritoId might not exist in the database
+          response.status(404).json({ error: 'Favorito não encontrado.' });
+        }
+      }
+    });
+  } catch (err) {
+    console.error("Error during deleting favorite:", err);
+    return response.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 export default controllerFavoritos;
