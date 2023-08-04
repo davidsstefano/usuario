@@ -103,7 +103,7 @@ controllerUsuarios.post(
   async function (request, response) {
     try {
       const validationError = validarCampos(request.body);
-      console.log(request.body);
+      
       if (validationError) {
         return response.status(400).json({ error: validationError });
       }
