@@ -131,10 +131,10 @@ controllerFavoritos.delete('/filmes_favoritos/:id_favorito_filmes', async functi
         return response.status(500).json({ error: 'Erro ao excluir favorito.' });
       } else {
         if (result.affectedRows > 0) {
-          // If at least one row was affected, it means the favorite was deleted successfully
+         
           response.status(200).json({ message: 'Favorito excluído com sucesso.' });
         } else {
-          // If no rows were affected, the provided favoritoId might not exist in the database
+         
           response.status(404).json({ error: 'Favorito não encontrado.' });
         }
       }
@@ -155,11 +155,9 @@ controllerFavoritos.delete('/generos_favoritos/:id_favorito_generos', async func
         return response.status(500).json({ error: 'Erro ao excluir favorito.' });
       } else {
         if (result.affectedRows > 0) {
-          // If at least one row was affected, it means the favorite was deleted successfully
-          response.status(200).json({ message: 'Favorito excluído com sucesso.' });
+         response.status(200).json({ message: 'Favorito excluído com sucesso.' });
         } else {
-          // If no rows were affected, the provided favoritoId might not exist in the database
-          response.status(404).json({ error: 'Favorito não encontrado.' });
+         response.status(404).json({ error: 'Favorito não encontrado.' });
         }
       }
     });
