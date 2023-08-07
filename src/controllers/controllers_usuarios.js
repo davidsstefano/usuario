@@ -16,9 +16,24 @@ controllerUsuarios.get("/usuarios", function (request, response) {
   });
 });
 
-controllerUsuarios.get("/usuarios/:user_id", function (request, response) {
-  let sql = "SELECT nome_user FROM usuarios WHERE id_user = ?";
-  db.query(sql, [request.params.user_id], function (err, result) {
+// controllerUsuarios.get("/usuarios/:user_id", function (request, response) {
+//   let sql = "SELECT nome_user FROM usuarios WHERE id_user = ?";
+//   db.query(sql, [request.params.user_id], function (err, result) {
+//     if (err) {
+//       return response.status(500).send(err);
+//     } else {
+//       if (result.length > 0) {
+//         return response.status(200).json(result[0]);
+//       } else {
+//         return response.status(404).json({ message: "Usuário não encontrado" });
+//       }
+//     }
+//   });
+// });
+
+controllerUsuarios.get("/usuarios/:user_token", function (request, response) {
+  let sql = "SELECT id_user,nome_user,token_user,email_user FROM usuarios WHERE token_user = ?";
+  db.query(sql, [request.params.user_token], function (err, result) {
     if (err) {
       return response.status(500).send(err);
     } else {
