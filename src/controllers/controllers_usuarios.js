@@ -142,7 +142,7 @@ controllerUsuarios.post(
           } else {
             // Enviar o e-mail de confirmação
             const mailOptions = {
-              from: 'davidsstefano@gmail.com',
+              from: 'testexmld@gmail.com',
               to: request.body.email_user,
               subject: 'Cadastro realizado com sucesso',
               text: 'Seu cadastro foi realizado com sucesso!'
