@@ -49,7 +49,7 @@ controllerUsuarios.get("/usuarios/:user_token", function (request, response) {
 function validarCampos(body) {
   const { email_user, senha_user } = body;
 
-  if (!email_user || email_user.indexOf("@") === -1) {
+  if (!email_user || email_user.indexOf("@") === -1 || email_user.indexOf(".") === -1) {
     return 'O campo "email" é inválido. Certifique-se de que contém um "@"';
   }
 
