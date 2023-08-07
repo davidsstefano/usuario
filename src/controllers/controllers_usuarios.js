@@ -182,12 +182,12 @@ controllerUsuarios.delete(
             .json({ error: "Erro ao excluir usuario." });
         } else {
           if (result.affectedRows > 0) {
-            // If at least one row was affected, it means the favorite was deleted successfully
+            
             response
               .status(200)
               .json({ message: "Usuario excluído com sucesso." });
           } else {
-            // If no rows were affected, the provided usuarioId might not exist in the database
+           
             response.status(404).json({ error: "Usuario não encontrado." });
           }
         }
@@ -198,5 +198,7 @@ controllerUsuarios.delete(
     }
   }
 );
+
+
 
 export default controllerUsuarios;
