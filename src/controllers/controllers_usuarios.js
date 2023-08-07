@@ -2,6 +2,16 @@ import { Router } from "express";
 import db from "../config/database.js";
 import CryptoJS from "crypto-js";
 import { v4 as uuidv4 } from "uuid";
+import nodemailer from 'nodemailer';
+
+
+const transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: 'testexmld@gmail.com',
+        pass: 'pegyjwolwncmfght'
+    }
+});
 
 const controllerUsuarios = Router();
 
@@ -15,21 +25,6 @@ controllerUsuarios.get("/usuarios", function (request, response) {
     }
   });
 });
-
-// controllerUsuarios.get("/usuarios/:user_id", function (request, response) {
-//   let sql = "SELECT nome_user FROM usuarios WHERE id_user = ?";
-//   db.query(sql, [request.params.user_id], function (err, result) {
-//     if (err) {
-//       return response.status(500).send(err);
-//     } else {
-//       if (result.length > 0) {
-//         return response.status(200).json(result[0]);
-//       } else {
-//         return response.status(404).json({ message: "Usuário não encontrado" });
-//       }
-//     }
-//   });
-// });
 
 controllerUsuarios.get("/usuarios/:user_token", function (request, response) {
   let sql = "SELECT id_user,nome_user,token_user,email_user FROM usuarios WHERE token_user = ?";
@@ -145,13 +140,29 @@ controllerUsuarios.post(
           if (err) {
             return response.status(500).send(err);
           } else {
+            // Enviar o e-mail de confirmação
+            const mailOptions = {
+              from: 'davidsstefano@gmail.com',
+              to: request.body.email_user,
+              subject: 'Cadastro realizado com sucesso',
+              text: 'Seu cadastro foi realizado com sucesso!'
+            };
+
+            transporter.sendMail(mailOptions, (emailError, emailInfo) => {
+              if (emailError) {
+                console.error('Erro ao enviar e-mail:', emailError);
+              } else {
+                console.log('E-mail enviado com sucesso:', emailInfo.response);
+              }
+            });
+
             return response.status(201).json({ user_id: result.insertId });
           }
         }
       );
     } catch (err) {
-      console.error("Error during user registration:", err);
-      return response.status(500).json({ message: "Internal Server Error" });
+      console.error("Erro durante o cadastro de usuário:", err);
+      return response.status(500).json({ message: "Erro interno do servidor" });
     }
   }
 );
