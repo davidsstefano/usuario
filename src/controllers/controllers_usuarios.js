@@ -50,11 +50,11 @@ function validarCampos(body) {
   const { email_user, senha_user } = body;
 
   if (!email_user || email_user.indexOf("@") === -1 || email_user.indexOf(".") === -1) {
-    return 'O campo "email" é inválido. Certifique-se de que contém um "@"';
+    return 'O campo (Email) é inválido. Certifique-se de que contém um (@) ou (.)';
   }
 
   if (!senha_user || senha_user.length < 5) {
-    return 'O campo "senha" é inválido. A senha deve conter pelo menos 5 caracteres.';
+    return 'O campo (Senha) é inválido. A senha deve conter pelo menos 5 caracteres.';
   }
 
   return null; // Campos válidos
