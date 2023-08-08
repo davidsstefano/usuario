@@ -167,6 +167,45 @@ controllerUsuarios.post(
   }
 );
 
+controllerUsuarios.put('/usuarios/gerar-codigo', async (req, res) => {
+  try {
+    // Gere um código de 6 dígitos aleatório
+    const codigo = Math.floor(100000 + Math.random() * 900000);
+
+    // Atualize o campo troca_senha na tabela de usuários com o novo código
+    const userEmail = req.body.email;
+    const sqlUpdate = `UPDATE usuarios SET troca_senha = ? WHERE email_user = ?`;
+    db.query(sqlUpdate, [codigo, userEmail], async (err, result) => {
+      if (err) {
+        console.error('Erro ao atualizar código:', err);
+        return res.status(500).json({ message: 'Erro interno do servidor' });
+      }
+
+      
+
+      const mailOptions = {
+        from: 'testexmld@gmail.com',
+        to: req.body.email,
+        subject: 'Código de Recuperação de Senha',
+        text: `Seu código de recuperação de senha é: ${codigo}`,
+      };
+
+      try {
+        const emailInfo = await transporter.sendMail(mailOptions);
+        console.log('E-mail enviado com sucesso:', emailInfo.response);
+        return res.status(200).json({ message: 'Código enviado para o e-mail fornecido' });
+      } catch (emailError) {
+        console.error('Erro ao enviar e-mail:', emailError);
+        return res.status(500).json({ message: 'Erro ao enviar e-mail' });
+      }
+    });
+  } catch (err) {
+    console.error('Erro ao gerar código:', err);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+});
+
+
 controllerUsuarios.delete(
   "/usuarios/:id_user",
   async function (request, response) {
