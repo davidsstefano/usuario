@@ -3,6 +3,9 @@ import db from "../config/database.js";
 import CryptoJS from "crypto-js";
 import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
+import validator from "validator";
+
+
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -12,8 +15,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 const controllerUsuarios = Router();
-
-
 
 controllerUsuarios.get("/usuarios", function (request, response) {
   let sql = "SELECT * FROM usuarios";
@@ -42,12 +43,9 @@ controllerUsuarios.get("/usuarios/:user_token", function (request, response) {
 });
 function validarCampos(body) {
   const { email_user, senha_user } = body;
-  if (
-    !email_user ||
-    email_user.indexOf("@") === -1 ||
-    email_user.indexOf(".") === -1
-  ) {
-    return "O campo (Email) é inválido. Certifique-se de que contém um (@) ou (.)";
+  if (!validator.isEmail(email_user)) {
+    
+    return "O campo (Email) é inválido. Certifique-se de que contém um e-mail válido.";
   }
   if (!senha_user || senha_user.length < 5) {
     return "O campo (Senha) é inválido. A senha deve conter pelo menos 5 caracteres.";
