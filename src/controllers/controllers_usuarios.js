@@ -195,7 +195,6 @@ controllerUsuarios.put("/usuario/troca_senha", async (req, res) => {
     const troca_senha = CryptoJS.MD5(req.body.senha).toString();
     const confirma_senha = CryptoJS.MD5(req.body.confi_senha).toString();
 
-    // Check if passwords match
     if (troca_senha !== confirma_senha) {
       return res.status(400).json({ message: "As senhas não coincidem" });
     }
