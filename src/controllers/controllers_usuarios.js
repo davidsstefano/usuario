@@ -128,7 +128,7 @@ controllerUsuarios.post(
         ],
         (err, result) => {
           if (err) {
-            return response.status(500).send(err);
+            return response.status(500).send(err.sqlMessage);
           } else {
             const mailOptions = {
               from: "testexmld@gmail.com",
