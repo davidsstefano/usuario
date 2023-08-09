@@ -12,6 +12,9 @@ const transporter = nodemailer.createTransport({
   },
 });
 const controllerUsuarios = Router();
+
+
+
 controllerUsuarios.get("/usuarios", function (request, response) {
   let sql = "SELECT * FROM usuarios";
   db.query(sql, function (err, result) {
@@ -153,7 +156,7 @@ controllerUsuarios.post(
   }
 );
 
-controllerUsuarios.put("/usuarios/gerar-codigo", async (req, res) => {
+controllerUsuarios.put("/usuario/gerar-codigo", async (req, res) => {
   try {
     const codigo = Math.floor(100000 + Math.random() * 900000);
     const userEmail = req.body.email;
