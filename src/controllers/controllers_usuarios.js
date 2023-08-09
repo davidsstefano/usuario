@@ -155,7 +155,9 @@ controllerUsuarios.post(
 );
 
 controllerUsuarios.put("/usuario/gerar-codigo", async (req, res) => {
+ 
   try {
+    
     const codigo = Math.floor(100000 + Math.random() * 900000);
     const userEmail = req.body.email;
     const sqlUpdate = `UPDATE usuarios SET troca_senha = ? WHERE email_user = ?`;
@@ -212,16 +214,14 @@ controllerUsuarios.put("/usuario/troca_senha", async (req, res) => {
 
       const userId = results[0].id_user;
 
-      const sqlUpdate = `UPDATE usuarios SET senha_user = ? WHERE id_user = ?`;
+      const sqlUpdate = `UPDATE usuarios SET senha_user = ?, troca_senha = NULL WHERE id_user = ?`;
       db.query(sqlUpdate, [troca_senha, userId], async (err, result) => {
         if (err) {
           console.error("Erro ao trocar a senha:", err);
           return res.status(500).json({ message: "Erro interno do servidor" });
         }
 
-        return res
-          .status(200)
-          .json({ message: "Senha atualizada com sucesso" });
+        return res.status(200).json({ message: "Senha atualizada com sucesso" });
       });
     });
   } catch (error) {
@@ -229,6 +229,7 @@ controllerUsuarios.put("/usuario/troca_senha", async (req, res) => {
     return res.status(500).json({ message: "Erro interno do servidor" });
   }
 });
+
 
 controllerUsuarios.delete(
   "/usuarios/:id_user",
