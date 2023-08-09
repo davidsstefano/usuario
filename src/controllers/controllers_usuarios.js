@@ -128,7 +128,9 @@ controllerUsuarios.post(
         ],
         (err, result) => {
           if (err) {
-            return response.status(500).send(err.sqlMessage);
+            if (err.errno === 1062) {
+                return response.status(500).send({ message: "Email já cadastrado!!!" });
+            }
           } else {
             const mailOptions = {
               from: "testexmld@gmail.com",
