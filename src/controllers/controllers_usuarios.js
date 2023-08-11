@@ -5,8 +5,6 @@ import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
 import validator from "validator";
 
-
-
 const transporter = nodemailer.createTransport({
   service: "Gmail",
   auth: {
@@ -44,7 +42,6 @@ controllerUsuarios.get("/usuarios/:user_token", function (request, response) {
 function validarCampos(body) {
   const { email_user, senha_user } = body;
   if (!validator.isEmail(email_user)) {
-    
     return "O campo (Email) é inválido. Certifique-se de que contém um e-mail válido.";
   }
   if (!senha_user || senha_user.length < 5) {
@@ -129,7 +126,9 @@ controllerUsuarios.post(
         (err, result) => {
           if (err) {
             if (err.errno === 1062) {
-                return response.status(500).send({ message: "Email já cadastrado!!!" });
+              return response
+                .status(500)
+                .send({ message: "Email já cadastrado!!!" });
             }
           } else {
             const mailOptions = {
@@ -157,9 +156,7 @@ controllerUsuarios.post(
 );
 
 controllerUsuarios.put("/usuario/gerar-codigo", async (req, res) => {
- 
   try {
-    
     const codigo = Math.floor(100000 + Math.random() * 900000);
     const userEmail = req.body.email;
     const sqlUpdate = `UPDATE usuarios SET troca_senha = ? WHERE email_user = ?`;
@@ -187,6 +184,31 @@ controllerUsuarios.put("/usuario/gerar-codigo", async (req, res) => {
     });
   } catch (err) {
     console.error("Erro ao gerar código:", err);
+    return res.status(500).json({ message: "Erro interno do servidor" });
+  }
+});
+
+controllerUsuarios.put("/usuario/troca-nome", async (req, res) => {
+  try {
+    const id_user = req.body.id_user;
+    const novoNome = req.body.nome_user; // Renamed variable for clarity
+
+    const sqlUpdate = "UPDATE usuarios SET nome_user = ? WHERE id_user = ?";
+    
+    db.query(sqlUpdate, [novoNome, id_user], (err, result) => {
+      if (err) {
+        console.error("Erro ao atualizar o nome:", err);
+        return res.status(500).json({ message: "Erro interno do servidor" });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+
+      return res.status(200).json({ message: "Nome atualizado com sucesso" });
+    });
+  } catch (error) {
+    console.error("Erro ao processar a requisição:", error);
     return res.status(500).json({ message: "Erro interno do servidor" });
   }
 });
@@ -223,7 +245,9 @@ controllerUsuarios.put("/usuario/troca_senha", async (req, res) => {
           return res.status(500).json({ message: "Erro interno do servidor" });
         }
 
-        return res.status(200).json({ message: "Senha atualizada com sucesso" });
+        return res
+          .status(200)
+          .json({ message: "Senha atualizada com sucesso" });
       });
     });
   } catch (error) {
@@ -231,7 +255,6 @@ controllerUsuarios.put("/usuario/troca_senha", async (req, res) => {
     return res.status(500).json({ message: "Erro interno do servidor" });
   }
 });
-
 
 controllerUsuarios.delete(
   "/usuarios/:id_user",
