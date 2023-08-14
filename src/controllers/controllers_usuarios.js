@@ -188,14 +188,14 @@ controllerUsuarios.put("/usuario/gerar-codigo", async (req, res) => {
   }
 });
 
-controllerUsuarios.put("/usuario/troca-nome", async (req, res) => {
+controllerUsuarios.put("/usuario/troca-nome/:id", async (req, res) => {
   try {
-    const id_user = req.body.id_user;
-    const novoNome = req.body.nome_user; // Renamed variable for clarity
+    const userId = req.params.id;
+    const novoNome = req.body.nome_user; 
 
     const sqlUpdate = "UPDATE usuarios SET nome_user = ? WHERE id_user = ?";
     
-    db.query(sqlUpdate, [novoNome, id_user], (err, result) => {
+    db.query(sqlUpdate, [novoNome, userId], (err, result) => {
       if (err) {
         console.error("Erro ao atualizar o nome:", err);
         return res.status(500).json({ message: "Erro interno do servidor" });
