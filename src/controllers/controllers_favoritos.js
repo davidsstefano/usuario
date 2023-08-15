@@ -3,6 +3,26 @@ import db from "../config/database.js";
 
 const controllerFavoritos = Router();
 
+controllerFavoritos.get("/generos", function(request, response) {
+  let sql = "SELECT * FROM generos";
+  db.query(sql, function(err, result){
+    if(err){
+      return response.status(500).send(err);
+    } else {
+      return response.status(200).json(result);
+    }
+  });
+});
+controllerFavoritos.get("/generos/:id_genero", function(request, response) {
+  let sql = "SELECT * FROM generos WHERE id_genero = ? ";
+  db.query(sql, [request.params.id_genero], function(err, result){
+    if(err){
+      return response.status(500).send(err);
+    } else {
+      return response.status(200).json(result);
+    }
+  });
+});
 controllerFavoritos.get("/filmes_favoritos", function (request, response) {
   let sql = "SELECT * FROM favoritos_filmes";
   db.query(sql, function (err, result) {
