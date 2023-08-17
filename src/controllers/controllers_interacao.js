@@ -70,8 +70,7 @@ controllerInteracao.put("/interacao/fim/:id_interacao", async (req, res) => {
         );
       });
     };
-
-    // Execute the update query and handle the result
+    
     const statusResult = await updateStatusPromise();
 
     if (statusResult.affectedRows === 0) {
