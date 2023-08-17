@@ -33,32 +33,39 @@ controllerInteracao.get("/interacao", async (req, res) => {
 });
 
 controllerInteracao.get("/interacao/:id_user", async (req, res) => {
-  try {
-    const id_user = req.params.id_user;
-    const sql = `
-      SELECT
-        usu.nome_user,
-        ge.nome_genero,
-        SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(ti.data_final, ti.data_inicio)))) AS total_diferenca
-      FROM
-        tempo_interacao ti
-      INNER JOIN
-        usuarios usu ON ti.id_usuario = usu.id_user
-      LEFT JOIN
-        generos ge ON ge.id_da_api = ti.id_genero
-      WHERE
-        usu.id_user = ?
-      GROUP BY
-        usu.nome_user, ge.nome_genero
-        ORDER BY
-        total_diferenca DESC
-    `;
-    const result = await query(sql, [id_user]);
-    res.status(200).json(result);
-  } catch (error) {
-    handleDatabaseError(res, error);
-  }
-});
+     try {
+       const id_user = req.params.id_user;
+       const userExistenceCheck = await query("SELECT COUNT(*) AS userCount FROM usuarios WHERE id_user = ?", [id_user]);
+   
+       if (userExistenceCheck[0].userCount === 0) {
+         return res.status(404).json({ message: "Usuário não encontrado." });
+       }
+   
+       const sql = `
+       SELECT
+       usu.nome_user,
+       ge.nome_genero,
+       SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(ti.data_final, ti.data_inicio)))) AS total_diferenca
+     FROM
+       tempo_interacao ti
+     INNER JOIN
+       usuarios usu ON ti.id_usuario = usu.id_user
+     LEFT JOIN
+       generos ge ON ge.id_da_api = ti.id_genero
+     WHERE
+       usu.id_user = ?
+     GROUP BY
+       usu.nome_user, ge.nome_genero
+       ORDER BY
+       total_diferenca DESC
+       `;
+   
+       const result = await query(sql, [id_user]);
+       res.status(200).json(result);
+     } catch (error) {
+       handleDatabaseError(res, error);
+     }
+   });
 
 controllerInteracao.post(
   "/interacao/inicio/:id_usuario/:id_genero",
