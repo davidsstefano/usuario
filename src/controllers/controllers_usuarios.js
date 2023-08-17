@@ -39,6 +39,7 @@ controllerUsuarios.get("/usuarios/:user_token", function (request, response) {
     }
   });
 });
+
 function validarCampos(body) {
   const { email_user, senha_user } = body;
   if (!validator.isEmail(email_user)) {
@@ -49,6 +50,8 @@ function validarCampos(body) {
   }
   return null;
 }
+
+
 controllerUsuarios.post("/usuarios/login", async function (request, response) {
   try {
     const validationError = validarCampos(request.body);
