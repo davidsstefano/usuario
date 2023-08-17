@@ -146,6 +146,7 @@ controllerFavoritos.delete(
 
 
 //################################## ROTAS GENEROS FAVORITOS  #################################//
+
 controllerFavoritos.get("/generos", function (request, response) {
   let sql = "SELECT * FROM generos";
   db.query(sql, function (err, result) {
