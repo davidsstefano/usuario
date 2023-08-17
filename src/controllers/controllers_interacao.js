@@ -4,8 +4,10 @@ import db from "../config/database.js";
 const controllerInteracao = Router();
 
 const handleDatabaseError = (res, error) => {
-  console.error("Database error:", error);
-  res.status(500).json({ error: "An error occurred while accessing the database." });
+  console.error("Erro no banco de dados:", error);
+  res
+    .status(500)
+    .json({ error: "Ocorreu um erro ao acessar o banco de dados." });
 };
 
 const query = (sql, values) => {
@@ -58,30 +60,39 @@ controllerInteracao.get("/interacao/:id_user", async (req, res) => {
   }
 });
 
-controllerInteracao.post("/interacao/inicio/:id_usuario/:id_genero", async (req, res) => {
-  try {
-    const { id_usuario, id_genero } = req.params;
-    const currentDate = new Date();
-    const insertStatusQuery = "INSERT INTO tempo_interacao (id_usuario, id_genero, data_inicio) VALUES (?, ?, ?);";
-    await query(insertStatusQuery, [id_usuario, id_genero, currentDate]);
-    res.status(201).json({ message: "Status updated and start time recorded." });
-  } catch (error) {
-    handleDatabaseError(res, error);
+controllerInteracao.post(
+  "/interacao/inicio/:id_usuario/:id_genero",
+  async (req, res) => {
+    try {
+      const { id_usuario, id_genero } = req.params;
+      const currentDate = new Date();
+      const insertStatusQuery =
+        "INSERT INTO tempo_interacao (id_usuario, id_genero, data_inicio) VALUES (?, ?, ?);";
+      await query(insertStatusQuery, [id_usuario, id_genero, currentDate]);
+      res
+        .status(201)
+        .json({ message: "Status atualizado e horário de início registrado." });
+    } catch (error) {
+      handleDatabaseError(res, error);
+    }
   }
-});
+);
 
 controllerInteracao.put("/interacao/fim/:id_interacao", async (req, res) => {
   try {
     const { id_interacao } = req.params;
     const currentDate = new Date();
-    const updateStatusQuery = "UPDATE tempo_interacao SET data_final = ? WHERE id_interacao = ?;";
+    const updateStatusQuery =
+      "UPDATE tempo_interacao SET data_final = ? WHERE id_interacao = ?;";
     const result = await query(updateStatusQuery, [currentDate, id_interacao]);
-    
+
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "ID not found." });
+      return res.status(404).json({ message: "ID não encontrado." });
     }
 
-    res.status(200).json({ message: "Status updated and end time recorded." });
+    res
+      .status(200)
+      .json({ message: "Status atualizado e horário de término registrado." });
   } catch (error) {
     handleDatabaseError(res, error);
   }
