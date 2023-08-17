@@ -14,6 +14,18 @@ controllerInteracao.get("/interacao", function (request, response) {
   });
 });
 
+controllerInteracao.get("/interacao/:id_user", function (request, response) {
+  let sql =
+    "SELECT usu.nome_user, ge.nome_genero, SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(ti.data_final, ti.data_inicio)))) AS total_diferenca FROM tempo_interacao ti INNER JOIN usuarios usu ON ti.id_usuario = usu.id_user LEFT JOIN generos ge ON ge.id_da_api = ti.id_genero WHERE usu.id_user = ? GROUP BY usu.nome_user, ge.nome_genero;";
+  db.query(sql, [request.params.id_user], function (err, result) {
+    if (err) {
+      return response.status(500).send(err);
+    } else {
+      return response.status(200).json(result);
+    }
+  });
+});
+
 controllerInteracao.post(
   "/interacao/inicio/:id_usuario/:id_genero",
   async (req, res) => {
@@ -70,7 +82,7 @@ controllerInteracao.put("/interacao/fim/:id_interacao", async (req, res) => {
         );
       });
     };
-    
+
     const statusResult = await updateStatusPromise();
 
     if (statusResult.affectedRows === 0) {
