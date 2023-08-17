@@ -33,15 +33,18 @@ controllerInteracao.get("/interacao", async (req, res) => {
 });
 
 controllerInteracao.get("/interacao/:id_user", async (req, res) => {
-     try {
-       const id_user = req.params.id_user;
-       const userExistenceCheck = await query("SELECT COUNT(*) AS userCount FROM usuarios WHERE id_user = ?", [id_user]);
-   
-       if (userExistenceCheck[0].userCount === 0) {
-         return res.status(404).json({ message: "Usuário não encontrado." });
-       }
-   
-       const sql = `
+  try {
+    const id_user = req.params.id_user;
+    const userExistenceCheck = await query(
+      "SELECT COUNT(*) AS userCount FROM usuarios WHERE id_user = ?",
+      [id_user]
+    );
+
+    if (userExistenceCheck[0].userCount === 0) {
+      return res.status(404).json({ message: "Usuário não encontrado." });
+    }
+
+    const sql = `
        SELECT
        usu.nome_user,
        ge.nome_genero,
@@ -59,23 +62,42 @@ controllerInteracao.get("/interacao/:id_user", async (req, res) => {
        ORDER BY
        total_diferenca DESC
        `;
-   
-       const result = await query(sql, [id_user]);
-       res.status(200).json(result);
-     } catch (error) {
-       handleDatabaseError(res, error);
-     }
-   });
+
+    const result = await query(sql, [id_user]);
+    res.status(200).json(result);
+  } catch (error) {
+    handleDatabaseError(res, error);
+  }
+});
 
 controllerInteracao.post(
   "/interacao/inicio/:id_usuario/:id_genero",
   async (req, res) => {
     try {
       const { id_usuario, id_genero } = req.params;
+
+      const userQuery = "SELECT * FROM usuarios WHERE id_user = ?;";
+      const genreQuery = "SELECT * FROM generos WHERE id_da_api = ?;";
+
+      const [userRows, genreRows] = await Promise.all([
+        query(userQuery, [id_usuario]),
+        query(genreQuery, [id_genero]),
+      ]);
+
+      if (userRows.length === 0) {
+        return res.status(404).json({ message: "Usuário não encontrado." });
+      }
+
+      if (genreRows.length === 0) {
+        return res.status(404).json({ message: "Gênero não encontrado." });
+      }
+
       const currentDate = new Date();
       const insertStatusQuery =
         "INSERT INTO tempo_interacao (id_usuario, id_genero, data_inicio) VALUES (?, ?, ?);";
+
       await query(insertStatusQuery, [id_usuario, id_genero, currentDate]);
+
       res
         .status(201)
         .json({ message: "Status atualizado e horário de início registrado." });
