@@ -3,6 +3,8 @@ import db from "../config/database.js";
 
 const controllerFavoritos = Router();
 
+
+
 //################################## ROTAS FILMES FAVORITOS #################################//
 
 controllerFavoritos.get("/filmes_favoritos", function (request, response) {
