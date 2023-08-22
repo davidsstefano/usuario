@@ -3,7 +3,7 @@ import db from "../config/database.js";
 
 const controllerFavoritos = Router();
 
-//################################## ROTAS FILMES FAVORITOS   #################################//
+//################################## ROTAS FILMES FAVORITOS #################################//
 
 controllerFavoritos.get("/filmes_favoritos", function (request, response) {
   let sql = "SELECT * FROM favoritos_filmes";
