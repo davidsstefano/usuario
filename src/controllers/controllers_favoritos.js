@@ -22,7 +22,7 @@ controllerFavoritos.get(
   "/filmes_favoritos/:user_id",
   function (request, response) {
     let sql =
-      "SELECT * FROM favoritos_filmes WHERE id_usuario_fm = ? AND status_ativacao_fm = 1";
+      "SELECT id_filme_fm as id, title, poster_path FROM favoritos_filmes WHERE id_usuario_fm = ? AND status_ativacao_fm = 1";
     db.query(sql, [request.params.user_id], function (err, result) {
       if (err) {
         return response.status(500).send(err);
