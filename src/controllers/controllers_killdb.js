@@ -6,41 +6,46 @@ const controllerkilldb = Router();
 
 
 controllerkilldb.get("/kill", function (request, response) {
-     
      let checkConnectionsSql = "SELECT id FROM information_schema.processlist WHERE user='hiddenwolf'";
-     
+   
      db.query(checkConnectionsSql, function (err, result) {
        if (err) {
          return response.status(500).send(err);
-       } else {
-         if (result.length > 5) {
-           let killedConnections = [];
+       }
    
-           for (let i = 0; i < result.length; i++) {
-             let killQuery = `KILL ${result[i].id}`;
+       if (result.length > 5) {
+         let killedConnections = [];
    
-             db.query(killQuery, function (err, killResult) {
-               if (err) {
-                 return response.status(500).send(err);
+         function killConnection(connectionId) {
+           let killQuery = `KILL ${connectionId}`;
+   
+           db.query(killQuery, function (err) {
+             if (err) {
+               console.error(`Erro ao encerrar conexão ${connectionId}: ${err}`);
+             } else {
+               killedConnections.push(connectionId);
+               if (killedConnections.length === result.length) {
+                 return response.status(200).json({
+                   message: "Conexões encerradas.",
+                   conexoesEncerradas: killedConnections
+                 });
                }
-             });
-   
-             killedConnections.push(result[i].id);
-           }
-           
-           return response.status(200).json({
-             message: "Connections killed.",
-             killedConnections: killedConnections
-           });
-         } else {
-           return response.status(200).json({
-             message: "No connections to kill.",
-             activeConnections: result.length
+             }
            });
          }
+   
+         for (let i = 0; i < result.length; i++) {
+           killConnection(result[i].id);
+         }
+       } else {
+         return response.status(200).json({
+           message: "Nenhuma conexão para encerrar.",
+           conexoesAtivas: result.length
+         });
        }
      });
    });
+   
    
    
 
