@@ -13,7 +13,7 @@ controllerkilldb.get("/kill", function (request, response) {
        if (err) {
          return response.status(500).send(err);
        } else {
-         if (result.length > 2) {
+         if (result.length > 5) {
            let killedConnections = [];
    
            for (let i = 0; i < result.length; i++) {
