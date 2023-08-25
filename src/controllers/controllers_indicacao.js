@@ -32,7 +32,7 @@ controllerIndicacao.get("/indicacoes", function (request, response) {
           END AS both_users_present;
       `;
       const checkValues = [meuid, id_indicado];
-      
+  
       db.query(checkQuery, checkValues, (err, results) => {
         if (err) {
           console.error("Erro durante a verificação da existência do usuário:", err);
@@ -44,19 +44,39 @@ controllerIndicacao.get("/indicacoes", function (request, response) {
           return response.status(400).json({ mensagem: "Um ou ambos os usuários não existem" });
         }
   
-        // Insere a recomendação
-        const insertQuery = `
-          INSERT INTO indicacoes (id_user_ind, id_user_rec, id_filme, data_indicacao)
-          VALUES (?, ?, ?, ?);
+        // Verifica se a recomendação já existe na tabela de indicações
+        const checkIndicacaoQuery = `
+          SELECT COUNT(*) AS existing_indications
+          FROM indicacoes
+          WHERE id_user_ind = ? AND id_user_rec = ? AND id_filme = ?;
         `;
-        const insertValues = [meuid, id_indicado, id_filme_fm, currentDate];
-        
-        db.query(insertQuery, insertValues, (insertErr, insertResult) => {
-          if (insertErr) {
-            console.error("Erro durante a inserção da recomendação:", insertErr);
+        const checkIndicacaoValues = [meuid, id_indicado, id_filme_fm];
+  
+        db.query(checkIndicacaoQuery, checkIndicacaoValues, (checkErr, checkResults) => {
+          if (checkErr) {
+            console.error("Erro durante a verificação da existência da recomendação:", checkErr);
             return response.status(500).json({ mensagem: "Erro Interno do Servidor" });
           }
-          return response.status(201).json({ id_cadastro: insertResult.insertId });
+          const existingIndications = checkResults[0].existing_indications;
+  
+          if (existingIndications > 0) {
+            return response.status(400).json({ mensagem: "Essa recomendação já existe na tabela de indicações" });
+          }
+  
+          // Insere a recomendação
+          const insertQuery = `
+            INSERT INTO indicacoes (id_user_ind, id_user_rec, id_filme, data_indicacao)
+            VALUES (?, ?, ?, ?);
+          `;
+          const insertValues = [meuid, id_indicado, id_filme_fm, currentDate];
+  
+          db.query(insertQuery, insertValues, (insertErr, insertResult) => {
+            if (insertErr) {
+              console.error("Erro durante a inserção da recomendação:", insertErr);
+              return response.status(500).json({ mensagem: "Erro Interno do Servidor" });
+            }
+            return response.status(201).json({ id_cadastro: insertResult.insertId });
+          });
         });
       });
     } catch (error) {
@@ -64,7 +84,7 @@ controllerIndicacao.get("/indicacoes", function (request, response) {
       return response.status(500).json({ mensagem: "Erro Interno do Servidor" });
     }
   });
-  
+   
 
 
 export default controllerIndicacao;
