@@ -184,7 +184,7 @@ controllerFavoritos.get("/generos", function (request, response) {
   });
 });
 controllerFavoritos.get("/generos/:id_genero", function (request, response) {
-  let sql = "SELECT * FROM generos WHERE id_genero = ? ";
+  let sql = "SELECT * FROM generos WHERE id_da_api = ? ";
   db.query(sql, [request.params.id_genero], function (err, result) {
     if (err) {
       return response.status(500).send(err);
