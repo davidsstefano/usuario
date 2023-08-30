@@ -76,33 +76,40 @@ controllerInteracao.post(
     try {
       const { id_usuario, id_genero } = req.params;
 
-      const userQuery = "SELECT * FROM usuarios WHERE id_user = ?;";
-      const genreQuery = "SELECT * FROM generos WHERE id_da_api = ?;";
+      const consultaUsuario = "SELECT * FROM usuarios WHERE id_user = ?;";
+      const consultaGenero = "SELECT * FROM generos WHERE id_da_api = ?;";
 
-      const [userRows, genreRows] = await Promise.all([
-        query(userQuery, [id_usuario]),
-        query(genreQuery, [id_genero]),
+      const [linhasUsuario, linhasGenero] = await Promise.all([
+        query(consultaUsuario, [id_usuario]),
+        query(consultaGenero, [id_genero]),
       ]);
 
-      if (userRows.length === 0) {
-        return res.status(404).json({ message: "Usuário não encontrado." });
+      if (linhasUsuario.length === 0) {
+        return res.status(404).json({ mensagem: "Usuário não encontrado." });
       }
 
-      if (genreRows.length === 0) {
-        return res.status(404).json({ message: "Gênero não encontrado." });
+      if (linhasGenero.length === 0) {
+        return res.status(404).json({ mensagem: "Gênero não encontrado." });
       }
 
-      const currentDate = new Date();
-      const insertStatusQuery =
+      const dataAtual = new Date();
+      
+      // Finalizar a interação anterior do mesmo usuário (se existir)
+      const atualizarInteracaoAnteriorQuery =
+        "UPDATE tempo_interacao SET data_final = ? WHERE id_usuario = ? AND data_final IS NULL;";
+      
+      await query(atualizarInteracaoAnteriorQuery, [dataAtual, id_usuario]);
+
+      const inserirInteracaoQuery =
         "INSERT INTO tempo_interacao (id_usuario, id_genero, data_inicio) VALUES (?, ?, ?);";
 
-      await query(insertStatusQuery, [id_usuario, id_genero, currentDate]);
+      await query(inserirInteracaoQuery, [id_usuario, id_genero, dataAtual]);
 
       res
         .status(201)
-        .json({ message: "Status atualizado e horário de início registrado." });
-    } catch (error) {
-      handleDatabaseError(res, error);
+        .json({ mensagem: "Status atualizado e horário de início registrado." });
+    } catch (erro) {
+      lidarComErroDeBancoDeDados(res, erro);
     }
   }
 );
@@ -110,21 +117,22 @@ controllerInteracao.post(
 controllerInteracao.put("/interacao/fim/:id_interacao", async (req, res) => {
   try {
     const { id_interacao } = req.params;
-    const currentDate = new Date();
-    const updateStatusQuery =
+    const dataAtual = new Date();
+    const atualizarStatusQuery =
       "UPDATE tempo_interacao SET data_final = ? WHERE id_interacao = ?;";
-    const result = await query(updateStatusQuery, [currentDate, id_interacao]);
+    const resultado = await query(atualizarStatusQuery, [dataAtual, id_interacao]);
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "ID não encontrado." });
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({ mensagem: "ID não encontrado." });
     }
 
     res
       .status(200)
-      .json({ message: "Status atualizado e horário de término registrado." });
-  } catch (error) {
-    handleDatabaseError(res, error);
+      .json({ mensagem: "Status atualizado e horário de término registrado." });
+  } catch (erro) {
+    lidarComErroDeBancoDeDados(res, erro);
   }
 });
+
 
 export default controllerInteracao;

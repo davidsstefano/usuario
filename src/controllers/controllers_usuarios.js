@@ -63,6 +63,9 @@ controllerUsuarios.post("/usuarios/login", async function (request, response) {
       "SELECT id_user, nome_user, token_user FROM usuarios WHERE email_user = ? AND senha_user = ?";
     const sqlUpdate =
       "UPDATE usuarios SET data_ultimolog_user = ?, quantidade_acesso = quantidade_acesso + 1 WHERE id_user = ?";
+    const sqlInsert =
+      "INSERT INTO tempo_interacao (id_usuario, id_genero, data_inicio) VALUES (?, ?, ?);";
+
     db.query(
       sqlSelect,
       [request.body.email_user, md5Hash],
@@ -82,8 +85,21 @@ controllerUsuarios.post("/usuarios/login", async function (request, response) {
                     .status(500)
                     .json({ error: "Erro ao atualizar o usuário." });
                 } else {
-                  response.setHeader("Content-Type", "application/json");
-                  response.status(200).json(result[0]);
+                  // Insert into tempo_interacao table
+                  db.query(
+                    sqlInsert,
+                    [user_id, 1, currentDate], // Assuming id_genero is 1
+                    function (insertErr, insertResult) {
+                      if (insertErr) {
+                        return response
+                          .status(500)
+                          .json({ error: "Erro ao inserir tempo de interação." });
+                      } else {
+                        response.setHeader("Content-Type", "application/json");
+                        response.status(200).json(result[0]);
+                      }
+                    }
+                  );
                 }
               }
             );
@@ -100,6 +116,7 @@ controllerUsuarios.post("/usuarios/login", async function (request, response) {
     return response.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 controllerUsuarios.post(
   "/usuarios/cadastro",
