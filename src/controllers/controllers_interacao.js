@@ -93,8 +93,7 @@ controllerInteracao.post(
       }
 
       const dataAtual = new Date();
-      
-      // Finalizar a interação anterior do mesmo usuário (se existir)
+    
       const atualizarInteracaoAnteriorQuery =
         "UPDATE tempo_interacao SET data_final = ? WHERE id_usuario = ? AND data_final IS NULL;";
       

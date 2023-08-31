@@ -85,10 +85,10 @@ controllerUsuarios.post("/usuarios/login", async function (request, response) {
                     .status(500)
                     .json({ error: "Erro ao atualizar o usuário." });
                 } else {
-                  // Insert into tempo_interacao table
+                 
                   db.query(
                     sqlInsert,
-                    [user_id, 1, currentDate], // Assuming id_genero is 1
+                    [user_id, 1, currentDate], 
                     function (insertErr, insertResult) {
                       if (insertErr) {
                         return response
@@ -235,7 +235,7 @@ controllerUsuarios.put("/usuario/troca-nome/:id", async (req, res) => {
 
 controllerUsuarios.put("/usuario/troca_senha", async (req, res) => {
   try {
-    const codigo = req.body.codigo; // Corrected variable name
+    const codigo = req.body.codigo; 
     const troca_senha = CryptoJS.MD5(req.body.senha).toString();
     const confirma_senha = CryptoJS.MD5(req.body.confi_senha).toString();
 
