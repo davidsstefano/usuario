@@ -5,6 +5,7 @@ import controllerFavoritos from "./src/controllers/controllers_favoritos.js";
 import controllerInteracao from "./src/controllers/controllers_interacao.js";
 import controllerIndicacao from "./src/controllers/controllers_indicacao.js";
 import controllerkilldb from "./src/controllers/controllers_killdb.js";
+import controllerInteracao_f from "./src/controllers/controllers_interacao_f.js";
 
 const app = express();
 const port = 3001;
@@ -17,6 +18,7 @@ app.use(controllerUsuarios);
 app.use(controllerFavoritos);
 app.use(controllerInteracao);
 app.use(controllerIndicacao);
+app.use(controllerInteracao_f)
 app.use(controllerkilldb)
 
 
