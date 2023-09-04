@@ -22,8 +22,6 @@ controllerIndicacao.get("/indicacoes", function (request, response) {
       const id_indicado = request.body.id_indicado;
       const id_filme_fm = request.body.id_filme_fm;
       const currentDate = new Date();
-  
-      // Verifica se ambos os usuários existem
       const checkQuery = `
         SELECT 
           CASE 
@@ -44,7 +42,7 @@ controllerIndicacao.get("/indicacoes", function (request, response) {
           return response.status(400).json({ mensagem: "Um ou ambos os usuários não existem" });
         }
   
-        // Verifica se a recomendação já existe na tabela de indicações
+      
         const checkIndicacaoQuery = `
           SELECT COUNT(*) AS existing_indications
           FROM indicacoes
@@ -63,7 +61,6 @@ controllerIndicacao.get("/indicacoes", function (request, response) {
             return response.status(400).json({ mensagem: "Essa recomendação já existe na tabela de indicações" });
           }
   
-          // Insere a recomendação
           const insertQuery = `
             INSERT INTO indicacoes (id_user_ind, id_user_rec, id_filme, data_indicacao)
             VALUES (?, ?, ?, ?);
